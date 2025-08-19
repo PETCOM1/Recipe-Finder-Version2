@@ -9,15 +9,17 @@ const Header = () => {
   const currentPath = window.location.pathname;
 
   // Common button classes
-  const navBtnBase = 'flex flex-row items-center p-2 rounded-2xl transition-colors';
+  const navBtnBase = 'flex flex-row items-center p-2 rounded-2xl transition-colors h-12 min-h-[48px]';
   const darkModeHandler = () => {
     // TODO: Implement dark mode toggle
     // You can use context or state to toggle theme
   };
 
   return (
+
+    
     <header className="w-full border-b-[1px] border-gray-200 shadow-sm bg-white sticky top-0 z-50">
-      <div className="flex flex-row md:flex-row flex-col md:justify-between items-center p-4 md:p-6 gap-2 md:gap-0">
+  <div className="flex flex-col md:flex-row md:justify-between items-center p-4 md:p-6 gap-2 md:gap-0">
         <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-start">
           <img
             src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTFpZzhocmxzOHl0eXZydXZlajI3cGEwcG9zY2R3empwbWt2a2ZhaiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/v8jIlDELZYmTxjqmUH/giphy.gif"

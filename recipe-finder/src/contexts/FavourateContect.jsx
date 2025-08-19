@@ -26,7 +26,7 @@ const FavourateContect = () => {
     return (
       <div className="flex flex-wrap justify-center items-center gap-4 p-4">
         {filteredFavorites.length === 0 ? (
-          <p className="text-gray-500 text-lg">No favorites yet.</p>
+          <p className="text-gray-500 text-lg">No favorites yet. Click <a href="/" className="text-blue-500 underline">here</a> to go back home.</p>
         ) : (
           filteredFavorites.map((recipe) => (
             <RecipeCard key={recipe.id} recipe={{ ...recipe, liked: true }} toggleLike={handleToggleLike} />

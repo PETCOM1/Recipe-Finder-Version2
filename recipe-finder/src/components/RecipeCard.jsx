@@ -32,7 +32,7 @@ const RecipeCard = ({ recipe, clickHandler, toggleLike }) => {
       <div className="p-4 flex flex-col gap-2 flex-1">
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-lg font-bold text-gray-800 truncate">{recipe.title}</h2>
-          <span className="bg-yellow-400 text-xs font-bold px-2 py-1 rounded-full ml-2">⭐ {recipe.rating}</span>
+          <span className="bg-yellow-400 text-xs font-bold px-2 py-1 rounded-full ml-2"> {recipe.rating}</span>
         </div>
         <div className="flex flex-wrap gap-1 mb-2">
           {recipe.tags && recipe.tags.map(tag => (
