@@ -1,33 +1,12 @@
 
 import { Heart } from 'lucide-react';
-import { useState, useEffect } from 'react';
 
 
-const RecipeCard = ({ recipe , clickHandler, toggleLike }) => {
-  const [liked, setLiked] = useState(false);
-
-  // Initialize liked state from localStorage
-  useEffect(() => {
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    setLiked(favorites.includes(recipe.id));
-  }, [recipe.id]);
-
-  // Toggle like and sync with localStorage
+const RecipeCard = ({ recipe, clickHandler, toggleLike }) => {
+  // liked status is now passed as a prop (recipe.liked)
   const handleLike = (e) => {
     e.stopPropagation();
-    setLiked((prev) => {
-      const newLiked = !prev;
-      const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-      let updatedFavorites;
-      if (newLiked) {
-        updatedFavorites = [...new Set([...favorites, recipe.id])];
-      } else {
-        updatedFavorites = favorites.filter(id => id !== recipe.id);
-      }
-      localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-      if (toggleLike) toggleLike(recipe.id);
-      return newLiked;
-    });
+    if (toggleLike) toggleLike(recipe.id);
   };
 
   return (
@@ -43,11 +22,11 @@ const RecipeCard = ({ recipe , clickHandler, toggleLike }) => {
           loading="lazy"
         />
         <button
-          className={`absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow hover:bg-red-100 transition-colors ${liked ? 'text-red-500' : 'text-gray-400'}`}
+          className={`absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow hover:bg-red-100 transition-colors ${recipe.liked ? 'text-red-500' : 'text-gray-400'}`}
           onClick={handleLike}
-          aria-label={liked ? 'Unlike' : 'Like'}
+          aria-label={recipe.liked ? 'Unlike' : 'Like'}
         >
-          <Heart fill={liked ? 'currentColor' : 'none'} size={22} />
+          <Heart fill={recipe.liked ? 'currentColor' : 'none'} size={22} />
         </button>
       </div>
       <div className="p-4 flex flex-col gap-2 flex-1">

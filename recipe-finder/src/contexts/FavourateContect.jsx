@@ -29,7 +29,7 @@ const FavourateContect = () => {
           <p className="text-gray-500 text-lg">No favorites yet.</p>
         ) : (
           filteredFavorites.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} toggleLike={handleToggleLike} />
+            <RecipeCard key={recipe.id} recipe={{ ...recipe, liked: true }} toggleLike={handleToggleLike} />
           ))
         )}
       </div>
