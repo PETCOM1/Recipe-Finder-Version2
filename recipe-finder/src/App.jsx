@@ -9,8 +9,6 @@ import NoPage from './pages/NoPage'
 import RecipeCard from './components/RecipeCard'  
 
 
-
-
 function App() {
 
   return (

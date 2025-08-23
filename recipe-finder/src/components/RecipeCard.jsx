@@ -2,7 +2,7 @@
 import { Heart } from 'lucide-react';
 
 
-const RecipeCard = ({ recipe, clickHandler, toggleLike }) => {
+const RecipeCard = ({ recipe, handleOnClickOfRecipeCard, toggleLike }) => {
   // liked status is now passed as a prop (recipe.liked)
   const handleLike = (e) => {
     e.stopPropagation();
@@ -11,8 +11,9 @@ const RecipeCard = ({ recipe, clickHandler, toggleLike }) => {
 
   return (
     <div
-  className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col transition-transform duration-200 hover:scale-105 hover:shadow-xl w-full max-w-xs mx-auto"
+      className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col transition-transform duration-200 hover:scale-105 hover:shadow-xl w-full max-w-xs mx-auto"
       style={{ cursor: 'pointer' }}
+      onClick={() => handleOnClickOfRecipeCard(recipe.id)}
     >
       <div className="relative">
         <img
