@@ -1,9 +1,11 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect, useContext } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { Link,useNavigate } from "react-router-dom";
 import recipes from '../data/recipes.json';
+import { ThemeContext } from './ThemeContext';
 
 const FavourateContect = () => {
+    const { theme } = useContext(ThemeContext);
     const [favorites, setFavorites] = useState([]);
     const navigate = useNavigate();
 
@@ -33,7 +35,7 @@ const FavourateContect = () => {
     return (
       <div className="flex flex-wrap justify-center items-center gap-4 p-4">
         {filteredFavorites.length === 0 ? (
-          <p className="text-gray-500 text-lg">No favorites yet. Click <a href="/" className="text-blue-500 underline">here</a> to go back home.</p>
+          <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>No favorites yet. Click <a href="/" className="text-blue-500 underline">here</a> to go back home.</p>
         ) : (
           filteredFavorites.map((recipe) => (
             <RecipeCard key={recipe.id} 

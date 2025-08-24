@@ -7,7 +7,7 @@ import RecipeDetails from './pages/RecipeDetails'
 import Home from './pages/Home'
 import NoPage from './pages/NoPage'
 import RecipeCard from './components/RecipeCard'  
-
+import { ThemeContext } from './contexts/ThemeContext'
 
 function App() {
 

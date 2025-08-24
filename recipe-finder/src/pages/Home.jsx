@@ -2,11 +2,12 @@ import Header from "../components/Header"
 import SearchBar from "../components/SearchBar"
 import RecipeCard from "../components/RecipeCard"
 import recipes from '../data/recipes.json';
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { ThemeContext } from '../contexts/ThemeContext';
 
 const Home = () => {
-
+  const { theme } = useContext(ThemeContext);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [maxTime, setMaxTime] = useState('');
@@ -71,7 +72,7 @@ const filteredRecipes = useMemo(() => {
   }
 
   return (
-    <div>
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
       <Header />
       <SearchBar handleSearchChange={handleSearchChange} searchTerm={searchTerm} handleMaxTimeChange={handleMaxTimeChange} maxTime={maxTime} />
       <div className="flex flex-wrap justify-center items-center gap-4 p-4">
