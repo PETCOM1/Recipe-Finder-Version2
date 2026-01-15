@@ -4,13 +4,15 @@ import RecipeCard from "../components/RecipeCard"
 import recipes from '../data/recipes.json';
 import { useMemo, useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { ThemeContext } from '../contexts/ThemeContext';
+import ThemeContext from '../contexts/ThemeContext';
 
 const Home = () => {
   const { theme } = useContext(ThemeContext);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [maxTime, setMaxTime] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const recipesPerPage = 6;
   const navigate = useNavigate();
 
   // Memorize filtered recipes to avoid unnecessary computations
@@ -36,6 +38,15 @@ const filteredRecipes = useMemo(() => {
 
   return results;
 }, [searchTerm, maxTime]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredRecipes.length / recipesPerPage);
+  const startIndex = (currentPage - 1) * recipesPerPage;
+  const currentRecipes = filteredRecipes.slice(startIndex, startIndex + recipesPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
 
   useEffect(() => {
@@ -65,10 +76,12 @@ const filteredRecipes = useMemo(() => {
   
   const handleSearchChange= (e) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page on search
   }
 
   const handleMaxTimeChange = (e) => {
     setMaxTime(e.target.value);
+    setCurrentPage(1); // Reset to first page on filter
   }
 
   return (
@@ -76,7 +89,7 @@ const filteredRecipes = useMemo(() => {
       <Header />
       <SearchBar handleSearchChange={handleSearchChange} searchTerm={searchTerm} handleMaxTimeChange={handleMaxTimeChange} maxTime={maxTime} />
       <div className="flex flex-wrap justify-center items-center gap-4 p-4">
-        {filteredRecipes.map(recipe => (
+        {currentRecipes.map(recipe => (
           <RecipeCard
             key={recipe.id}
             recipe={{ ...recipe, liked: favoriteIds.includes(recipe.id) }}
@@ -85,6 +98,34 @@ const filteredRecipes = useMemo(() => {
           />
         ))}
       </div>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-8 mb-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          >
+            Previous
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-3 py-2 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

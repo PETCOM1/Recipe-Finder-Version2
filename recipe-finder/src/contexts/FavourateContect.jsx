@@ -2,7 +2,7 @@ import { useState,useEffect, useContext } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { Link,useNavigate } from "react-router-dom";
 import recipes from '../data/recipes.json';
-import { ThemeContext } from './ThemeContext';
+import ThemeContext from './ThemeContext';
 
 const FavourateContect = () => {
     const { theme } = useContext(ThemeContext);

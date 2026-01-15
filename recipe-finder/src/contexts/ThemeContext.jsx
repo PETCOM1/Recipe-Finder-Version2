@@ -1,50 +1,139 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// 1. Create the context
+// Define color palettes
+const colorPalettes = {
+  blue: {
+    primary: '#3B82F6',
+    secondary: '#64748B',
+    accent: '#F59E0B',
+    surface: '#FFFFFF',
+    muted: '#F8FAFC',
+    border: '#E2E8F0',
+    text: '#1E293B',
+    textSecondary: '#64748B',
+  },
+  green: {
+    primary: '#10B981',
+    secondary: '#64748B',
+    accent: '#F59E0B',
+    surface: '#FFFFFF',
+    muted: '#F0FDF4',
+    border: '#D1FAE5',
+    text: '#064E3B',
+    textSecondary: '#64748B',
+  },
+  purple: {
+    primary: '#8B5CF6',
+    secondary: '#64748B',
+    accent: '#F59E0B',
+    surface: '#FFFFFF',
+    muted: '#FAF5FF',
+    border: '#E9D5FF',
+    text: '#581C87',
+    textSecondary: '#64748B',
+  },
+  red: {
+    primary: '#EF4444',
+    secondary: '#64748B',
+    accent: '#F59E0B',
+    surface: '#FFFFFF',
+    muted: '#FEF2F2',
+    border: '#FECACA',
+    text: '#991B1B',
+    textSecondary: '#64748B',
+  },
+};
+
+const darkColorPalettes = {
+  blue: {
+    primary: '#60A5FA',
+    secondary: '#94A3B8',
+    accent: '#F59E0B',
+    surface: '#1E293B',
+    muted: '#334155',
+    border: '#475569',
+    text: '#F8FAFC',
+    textSecondary: '#CBD5E1',
+  },
+  green: {
+    primary: '#34D399',
+    secondary: '#94A3B8',
+    accent: '#F59E0B',
+    surface: '#1E293B',
+    muted: '#334155',
+    border: '#475569',
+    text: '#F8FAFC',
+    textSecondary: '#CBD5E1',
+  },
+  purple: {
+    primary: '#A78BFA',
+    secondary: '#94A3B8',
+    accent: '#F59E0B',
+    surface: '#1E293B',
+    muted: '#334155',
+    border: '#475569',
+    text: '#F8FAFC',
+    textSecondary: '#CBD5E1',
+  },
+  red: {
+    primary: '#F87171',
+    secondary: '#94A3B8',
+    accent: '#F59E0B',
+    surface: '#1E293B',
+    muted: '#334155',
+    border: '#475569',
+    text: '#F8FAFC',
+    textSecondary: '#CBD5E1',
+  },
+};
+
 const ThemeContext = createContext();
 
-// 2. Create the provider component
-function ThemeProvider(props) {
-  // Check localStorage for saved theme, default to 'light'
-  function getInitialTheme() {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      return savedTheme;
-    } else {
-      return "light";
-    }
-  }
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('light');
+  const [palette, setPalette] = useState('blue');
 
-  const themeState = useState(getInitialTheme());
-  const theme = themeState[0];
-  const setTheme = themeState[1];
+  // Load theme and palette from localStorage on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const savedPalette = localStorage.getItem('palette');
+    if (savedTheme) setTheme(savedTheme);
+    if (savedPalette) setPalette(savedPalette);
+  }, []);
 
-  // Update localStorage and document class whenever theme changes
-  useEffect(function () {
-    localStorage.setItem("theme", theme);
+  // Save theme and palette to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+    localStorage.setItem('palette', palette);
+  }, [theme, palette]);
 
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [theme]);
+  const toggleTheme = () => {
+    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+  };
 
-  // Toggle function
-  function toggleTheme() {
-    if (theme === "light") {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
-  }
+  const colors = theme === 'dark' ? darkColorPalettes[palette] : colorPalettes[palette];
+
+  const value = {
+    theme,
+    palette,
+    colors,
+    toggleTheme,
+    setPalette,
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme: theme, toggleTheme: toggleTheme }}>
-      {props.children}
+    <ThemeContext.Provider value={value}>
+      {children}
     </ThemeContext.Provider>
   );
-}
+};
 
-// Export at the bottom
-export { ThemeContext, ThemeProvider };
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};
+
+export default ThemeContext;
