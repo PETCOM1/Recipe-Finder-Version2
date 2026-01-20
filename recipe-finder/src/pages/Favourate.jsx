@@ -1,4 +1,5 @@
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import RecipeCard from "../components/RecipeCard";
 import FavourateContect from "../contexts/FavourateContect";
 import { useTheme } from '../contexts/ThemeContext';
@@ -73,7 +74,7 @@ const Favourate = () => {
       animate="visible"
       variants={pageVariants}
       className="min-h-screen overflow-hidden"
-      style={{ backgroundColor: colors.background }}
+      style={{ backgroundColor: colors.background, color: colors.text }}
     >
       <Header />
       
@@ -315,6 +316,7 @@ const Favourate = () => {
           background: `linear-gradient(to top, ${colors.background} 0%, transparent 100%)`
         }}
       />
+      <Footer />
     </motion.div>
   );
 };

@@ -1,4 +1,5 @@
 import recipes from '../data/recipes.json';
+import Footer from '../components/Footer';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -159,7 +160,7 @@ const RecipeDetails = () => {
       animate="visible"
       variants={pageVariants}
       className="min-h-screen"
-      style={{ backgroundColor: colors.background }}
+      style={{ backgroundColor: colors.background, color: colors.text }}
     >
       {/* Back button */}
       <motion.button
@@ -554,6 +555,7 @@ const RecipeDetails = () => {
           </div>
         </motion.div>
       </div>
+      <Footer />
     </motion.div>
   );
 };

@@ -3,6 +3,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { ChefHat, Home, Utensils, AlertCircle, Search } from 'lucide-react';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const NoPage = () => {
   const { colors, theme } = useTheme();
@@ -87,7 +88,7 @@ const NoPage = () => {
       animate="visible"
       variants={containerVariants}
       className="min-h-screen overflow-hidden relative"
-      style={{ backgroundColor: colors.background }}
+      style={{ backgroundColor: colors.background, color: colors.text }}
     >
       <Header />
       
@@ -363,6 +364,7 @@ const NoPage = () => {
           background: `linear-gradient(to top, ${colors.background} 0%, transparent 100%)`
         }}
       />
+      <Footer />
     </motion.div>
   );
 };

@@ -1,13 +1,14 @@
 import Header from "../components/Header"
 import SearchBar from "../components/SearchBar"
 import RecipeCard from "../components/RecipeCard"
+import Footer from "../components/Footer";
 import recipes from '../data/recipes.json';
 import { useMemo, useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ThemeContext from '../contexts/ThemeContext';
 
 const Home = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme, colors } = useContext(ThemeContext);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [maxTime, setMaxTime] = useState('');
@@ -15,39 +16,35 @@ const Home = () => {
   const recipesPerPage = 6;
   const navigate = useNavigate();
 
-  // Memorize filtered recipes to avoid unnecessary computations
-const filteredRecipes = useMemo(() => {
-  let results = recipes;
+  const filteredRecipes = useMemo(() => {
+    let results = recipes;
 
-  const lowerSearch = searchTerm.toLowerCase();
+    const lowerSearch = searchTerm.toLowerCase();
 
-  // Text search (title + ingredients)
-  if (searchTerm) {
-    results = results.filter(recipe =>
-      recipe.title.toLowerCase().includes(lowerSearch) ||
-      recipe.ingredients.some(ingredient =>
-        ingredient.name.toLowerCase().includes(lowerSearch)
-      )
-    );
-  }
+    if (searchTerm) {
+      results = results.filter(recipe =>
+        recipe.title.toLowerCase().includes(lowerSearch) ||
+        recipe.ingredients.some(ingredient =>
+          ingredient.name.toLowerCase().includes(lowerSearch)
+        )
+      );
+    }
 
-  // Time filter
-  if (maxTime) {
-    results = results.filter(recipe => recipe.timeMinutes <= Number(maxTime));
-  }
+    if (maxTime) {
+      results = results.filter(recipe => recipe.timeMinutes <= Number(maxTime));
+    }
 
-  return results;
-}, [searchTerm, maxTime]);
+    return results;
+  }, [searchTerm, maxTime]);
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredRecipes.length / recipesPerPage);
   const startIndex = (currentPage - 1) * recipesPerPage;
   const currentRecipes = filteredRecipes.slice(startIndex, startIndex + recipesPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
 
   useEffect(() => {
     const favs = JSON.parse(localStorage.getItem('favorites')) || [];
@@ -67,65 +64,116 @@ const filteredRecipes = useMemo(() => {
     });
   };
 
-
-  //Should this function be triggered on recipe card click?,the we should be able to navigate to RecipeDetails page
   const handleOnClickOfRecipeCard = (recipeId) => {
-    // Navigate to RecipeDetails page
     navigate(`/recipe/${recipeId}`);
-  }
+  };
   
-  const handleSearchChange= (e) => {
+  const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page on search
-  }
+    setCurrentPage(1);
+  };
 
   const handleMaxTimeChange = (e) => {
     setMaxTime(e.target.value);
-    setCurrentPage(1); // Reset to first page on filter
-  }
+    setCurrentPage(1);
+  };
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: colors.background, color: colors.text }}>
       <Header />
-      <SearchBar handleSearchChange={handleSearchChange} searchTerm={searchTerm} handleMaxTimeChange={handleMaxTimeChange} maxTime={maxTime} />
-      <div className="flex flex-wrap justify-center items-center gap-4 p-4">
-        {currentRecipes.map(recipe => (
-          <RecipeCard
-            key={recipe.id}
-            recipe={{ ...recipe, liked: favoriteIds.includes(recipe.id) }}
-            toggleLike={toggleLike}
-            handleOnClickOfRecipeCard={handleOnClickOfRecipeCard}
+      
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 py-8">
+          <SearchBar 
+            handleSearchChange={handleSearchChange} 
+            searchTerm={searchTerm} 
+            handleMaxTimeChange={handleMaxTimeChange} 
+            maxTime={maxTime} 
           />
-        ))}
-      </div>
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-8 mb-4">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-          >
-            Previous
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`px-3 py-2 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-          >
-            Next
-          </button>
+          
+          {/* Recipe Grid */}
+          {currentRecipes.length > 0 ? (
+            <>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold mb-2">
+                  {filteredRecipes.length} Recipe{filteredRecipes.length !== 1 ? 's' : ''} Found
+                </h2>
+                {searchTerm && (
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Showing results for: "{searchTerm}"
+                  </p>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 mb-8">
+                {currentRecipes.map(recipe => (
+                  <RecipeCard
+                    key={recipe.id}
+                    recipe={{ ...recipe, liked: favoriteIds.includes(recipe.id) }}
+                    toggleLike={toggleLike}
+                    handleOnClickOfRecipeCard={handleOnClickOfRecipeCard}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-16">
+              <div className="text-6xl mb-4">🍳</div>
+              <h3 className="text-2xl font-bold mb-4">No Recipes Found</h3>
+              <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                {searchTerm ? 
+                  `We couldn't find any recipes matching "${searchTerm}". Try a different search term or clear the filters.` :
+                  "No recipes match your current filters. Try adjusting the maximum cooking time."}
+              </p>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-8 mb-12">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === 1 
+                    ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed' 
+                    : 'bg-blue-500 hover:bg-blue-600 text-white shadow-md hover:shadow-lg'
+                }`}
+              >
+                Previous
+              </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-4 py-2 min-w-[44px] rounded-lg font-medium transition-all ${
+                    currentPage === page 
+                      ? 'bg-blue-600 text-white shadow-lg' 
+                      : 'bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === totalPages 
+                    ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed' 
+                    : 'bg-blue-500 hover:bg-blue-600 text-white shadow-md hover:shadow-lg'
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </main>
+
+      <Footer />
     </div>
   );
 };

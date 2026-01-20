@@ -11,6 +11,7 @@ const colorPalettes = {
     border: '#E2E8F0',
     text: '#1E293B',
     textSecondary: '#64748B',
+    background: '#FFFFFF',
   },
   green: {
     primary: '#10B981',
@@ -21,6 +22,7 @@ const colorPalettes = {
     border: '#D1FAE5',
     text: '#064E3B',
     textSecondary: '#64748B',
+    background: '#FFFFFF',
   },
   purple: {
     primary: '#8B5CF6',
@@ -31,6 +33,7 @@ const colorPalettes = {
     border: '#E9D5FF',
     text: '#581C87',
     textSecondary: '#64748B',
+    background: '#FFFFFF',
   },
   red: {
     primary: '#EF4444',
@@ -41,6 +44,7 @@ const colorPalettes = {
     border: '#FECACA',
     text: '#991B1B',
     textSecondary: '#64748B',
+    background: '#FFFFFF',
   },
 };
 
@@ -54,6 +58,7 @@ const darkColorPalettes = {
     border: '#475569',
     text: '#F8FAFC',
     textSecondary: '#CBD5E1',
+    background: '#111827',
   },
   green: {
     primary: '#34D399',
@@ -64,6 +69,7 @@ const darkColorPalettes = {
     border: '#475569',
     text: '#F8FAFC',
     textSecondary: '#CBD5E1',
+    background: '#111827',
   },
   purple: {
     primary: '#A78BFA',
@@ -74,6 +80,7 @@ const darkColorPalettes = {
     border: '#475569',
     text: '#F8FAFC',
     textSecondary: '#CBD5E1',
+    background: '#111827',
   },
   red: {
     primary: '#F87171',
@@ -84,6 +91,7 @@ const darkColorPalettes = {
     border: '#475569',
     text: '#F8FAFC',
     textSecondary: '#CBD5E1',
+    background: '#111827',
   },
 };
 
