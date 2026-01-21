@@ -19,6 +19,8 @@ const RecipeDetails = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [servings, setServings] = useState(1);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
 
   // Animation variants
   const pageVariants = {
@@ -78,10 +80,36 @@ const RecipeDetails = () => {
     setRecipe(foundRecipe);
     if (foundRecipe) {
       setServings(foundRecipe.servings);
+      setTimeLeft(foundRecipe.timeMinutes * 60);
       const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
       setIsLiked(favorites.includes(foundRecipe.id));
     }
   }, [id]);
+
+  // Timer countdown effect
+  useEffect(() => {
+    let interval = null;
+    if (isTimerRunning && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft(timeLeft => {
+          if (timeLeft <= 1) {
+            setIsTimerRunning(false);
+            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+              new Notification(`${recipe.title} is ready!`, {
+                body: `Your ${recipe.title} should be done cooking!`,
+                icon: recipe.image
+              });
+            }
+            return 0;
+          }
+          return timeLeft - 1;
+        });
+      }, 1000);
+    } else if (!isTimerRunning) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, timeLeft, recipe]);
 
   // Toggle like
   const handleLike = () => {
@@ -517,7 +545,7 @@ const RecipeDetails = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
               className="mt-8 p-6 rounded-xl"
-              style={{ 
+              style={{
                 backgroundColor: colors.primary + '10',
                 border: `2px dashed ${colors.primary}40`
               }}
@@ -527,29 +555,46 @@ const RecipeDetails = () => {
                   <Timer size={24} style={{ color: colors.primary }} />
                   <div>
                     <h3 className="font-bold" style={{ color: colors.text }}>Cooking Timer</h3>
-                    <p className="text-sm" style={{ color: colors.textSecondary }}>
-                      Set a timer for {recipe.timeMinutes} minutes
-                    </p>
+                    <div className="text-3xl font-mono font-bold" style={{ color: colors.primary }}>
+                      {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
+                    </div>
                   </div>
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-4 py-2 rounded-lg font-bold"
-                  style={{ backgroundColor: colors.primary, color: 'white' }}
-                  onClick={() => {
-                    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-                      setTimeout(() => {
-                        new Notification(`${recipe.title} is ready!`, {
-                          body: `Your ${recipe.title} should be done cooking!`,
-                          icon: recipe.image
-                        });
-                      }, recipe.timeMinutes * 60000);
-                    }
-                  }}
-                >
-                  Start Timer
-                </motion.button>
+                <div className="flex gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-4 py-2 rounded-lg font-bold"
+                    style={{
+                      backgroundColor: isTimerRunning ? colors.error : colors.primary,
+                      color: 'white'
+                    }}
+                    onClick={() => {
+                      if (isTimerRunning) {
+                        setIsTimerRunning(false);
+                      } else {
+                        setIsTimerRunning(true);
+                      }
+                    }}
+                  >
+                    {isTimerRunning ? 'Pause' : 'Start'}
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-4 py-2 rounded-lg font-bold"
+                    style={{
+                      backgroundColor: colors.muted,
+                      color: colors.text
+                    }}
+                    onClick={() => {
+                      setIsTimerRunning(false);
+                      setTimeLeft(recipe.timeMinutes * 60);
+                    }}
+                  >
+                    Reset
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           </div>
