@@ -8,6 +8,10 @@ const RecipeCard = ({ recipe, handleOnClickOfRecipeCard, toggleLike }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  // Remove duplicate tags and dietary items
+  const uniqueTags = recipe.tags ? [...new Set(recipe.tags)] : [];
+  const uniqueDietary = recipe.dietary ? [...new Set(recipe.dietary)] : [];
+
   // Animation variants
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -192,9 +196,9 @@ const RecipeCard = ({ recipe, handleOnClickOfRecipeCard, toggleLike }) => {
           </motion.h3>
         </div>
 
-        {/* Tags */}
+        {/* Tags - Now using uniqueTags */}
         <div className="flex flex-wrap gap-1">
-          {recipe.tags && recipe.tags.map((tag, index) => (
+          {uniqueTags.map((tag, index) => (
             <motion.span
               key={tag}
               custom={index}
@@ -238,10 +242,10 @@ const RecipeCard = ({ recipe, handleOnClickOfRecipeCard, toggleLike }) => {
           </div>
         </div>
 
-        {/* Dietary Information */}
-        {recipe.dietary && recipe.dietary.length > 0 && (
+        {/* Dietary Information - Now using uniqueDietary */}
+        {uniqueDietary.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
-            {recipe.dietary.map((diet, index) => (
+            {uniqueDietary.map((diet, index) => (
               <motion.span
                 key={diet}
                 custom={index}
@@ -255,7 +259,7 @@ const RecipeCard = ({ recipe, handleOnClickOfRecipeCard, toggleLike }) => {
                   border: `1px solid ${colors.success}30`
                 }}
               >
-                {diet}
+                
               </motion.span>
             ))}
           </div>

@@ -1,4 +1,4 @@
-import { Sun, Moon, Home, Heart, Menu, X, Search } from 'lucide-react';
+import { Sun, Moon, Home, Heart, Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
@@ -41,7 +41,6 @@ const Header = () => {
   const navItems = [
     { label: 'Home', icon: Home, path: '/' },
     { label: 'Favorites', icon: Heart, path: '/favorites' },
-    { label: 'Search', icon: Search, path: '/search' },
   ];
 
   // Bottom navigation for mobile (like native apps)
