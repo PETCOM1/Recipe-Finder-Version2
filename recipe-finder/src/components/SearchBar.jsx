@@ -1,4 +1,4 @@
-import { Search, Clock, X, Filter } from 'lucide-react';
+import { Search, Clock, X, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,324 +8,183 @@ const SearchBar = ({ handleSearchChange, searchTerm, handleMaxTimeChange, maxTim
   const [isFocused, setIsFocused] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-        duration: 0.6
-      }
-    }
-  };
-
-  const inputVariants = {
-    unfocused: { scale: 1 },
-    focused: {
-      scale: 1.02,
-      boxShadow: `0 0 0 3px ${colors.primary}40`,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 25
-      }
-    }
-  };
-
-  const filterVariants = {
-    hidden: {
-      height: 0,
-      opacity: 0,
-      y: -10
-    },
-    visible: {
-      height: "auto",
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30
-      }
-    }
-  };
-
-  const buttonVariants = {
-    rest: { scale: 1 },
-    hover: { scale: 1.05 },
-    tap: { scale: 0.95 }
-  };
-
-  const clearButtonVariants = {
-    hidden: { opacity: 0, scale: 0 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 200
-      }
-    }
-  };
-
-  const handleClear = () => {
-    handleSearchChange({ target: { value: '' } });
-    handleMaxTimeChange({ target: { value: '' } });
-  };
+  const softCurve = [0.23, 1, 0.32, 1];
 
   return (
     <motion.section
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="w-full max-w-4xl mx-auto my-6 p-6 rounded-2xl shadow-lg"
-      style={{
-        backgroundColor: colors.surface,
-        border: `1px solid ${colors.border}`,
-        boxShadow: `0 10px 40px ${theme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.1)'}`
-      }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: softCurve }}
+      className="w-full max-w-3xl mx-auto my-12 px-4"
     >
-      {/* Header */}
-      <div className="text-center mb-6">
-        <motion.h2 
-          className="text-2xl font-bold mb-2"
-          style={{ color: colors.primary }}
-          whileHover={{ scale: 1.02 }}
+      {/* Editorial Header */}
+      <div className="text-center mb-10 space-y-2">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-2"
+          style={{ backgroundColor: `${colors.primary}15`, color: colors.primary }}
         >
-          Find Your Perfect Recipe
-        </motion.h2>
-        <motion.p 
-          className="text-lg"
-          style={{ color: colors.textSecondary }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          Discover delicious recipes tailored to your taste
-        </motion.p>
+          <Sparkles size={12} /> Curated for you
+        </motion.div>
+        <h2 className="text-4xl font-bold tracking-tighter lowercase italic" style={{ color: colors.text }}>
+          what's on the <span style={{ color: colors.primary }}>menu?</span>
+        </h2>
       </div>
 
-      {/* Main Search */}
-      <div className="relative mb-4">
+      {/* Modern Search Input Container */}
+      <div className="relative group">
         <motion.div
-          variants={inputVariants}
-          animate={isFocused ? "focused" : "unfocused"}
-          className="flex items-center"
+          animate={{ 
+            scale: isFocused ? 1.01 : 1,
+            y: isFocused ? -2 : 0 
+          }}
+          transition={{ duration: 0.4, ease: softCurve }}
+          className="relative flex items-center p-1 rounded-[2rem] transition-all duration-500 shadow-2xl"
+          style={{
+            backgroundColor: colors.surface,
+            border: `1px solid ${isFocused ? colors.primary + '40' : colors.border + '40'}`,
+            boxShadow: isFocused 
+              ? `0 20px 40px -10px ${colors.primary}20` 
+              : `0 10px 30px -15px rgba(0,0,0,0.1)`
+          }}
         >
-          <div 
-            className="absolute left-4 z-10"
-            style={{ color: colors.textSecondary }}
-          >
-            <Search size={20} />
+          <div className="pl-6" style={{ color: isFocused ? colors.primary : colors.text + '40' }}>
+            <Search size={22} strokeWidth={2.5} />
           </div>
           
           <input
             type="text"
-            placeholder="Search for recipes, ingredients, or cuisines..."
-            className="w-full pl-12 pr-12 py-3 rounded-xl border-2 focus:outline-none text-lg transition-all duration-300"
-            style={{
-              backgroundColor: colors.background,
-              borderColor: isFocused ? colors.primary : colors.border,
-              color: colors.text
-            }}
+            placeholder="Search ingredients, cuisines, or vibes..."
+            className="w-full px-4 py-4 bg-transparent focus:outline-none text-lg font-medium tracking-tight placeholder:italic"
+            style={{ color: colors.text }}
             value={searchTerm}
             onChange={handleSearchChange}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
           />
           
-          {/* Clear Button (only when there's input) */}
-          <AnimatePresence>
-            {(searchTerm || maxTime) && (
-              <motion.button
-                variants={clearButtonVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={handleClear}
-                className="absolute right-4 p-1.5 rounded-full"
-                style={{
-                  backgroundColor: colors.muted,
-                  color: colors.textSecondary
-                }}
-                aria-label="Clear search"
-              >
-                <X size={18} />
-              </motion.button>
-            )}
-          </AnimatePresence>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 pr-2">
+            <AnimatePresence>
+              {searchTerm && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5 }}
+                  onClick={() => handleSearchChange({ target: { value: '' } })}
+                  className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
+                  style={{ color: colors.text + '40' }}
+                >
+                  <X size={20} />
+                </motion.button>
+              )}
+            </AnimatePresence>
+
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="p-3 rounded-full transition-all duration-300"
+              style={{ 
+                backgroundColor: showFilters ? colors.primary : 'transparent',
+                color: showFilters ? '#fff' : colors.text
+              }}
+            >
+              <SlidersHorizontal size={20} />
+            </button>
+          </div>
         </motion.div>
       </div>
 
-      {/* Filter Toggle */}
-      <div className="flex justify-center mb-4">
-        <motion.button
-          variants={buttonVariants}
-          whileHover="hover"
-          whileTap="tap"
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-colors"
-          style={{
-            backgroundColor: showFilters ? colors.primary : colors.muted,
-            color: showFilters ? 'white' : colors.text
-          }}
-        >
-          <Filter size={18} />
-          <span>{showFilters ? 'Hide Filters' : 'Show Filters'}</span>
-        </motion.button>
-      </div>
-
-      {/* Filter Section */}
+      {/* Glassmorphism Filter Tray */}
       <AnimatePresence>
         {showFilters && (
           <motion.div
-            variants={filterVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="overflow-hidden"
+            initial={{ height: 0, opacity: 0, y: -20 }}
+            animate={{ height: 'auto', opacity: 1, y: 0 }}
+            exit={{ height: 0, opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: softCurve }}
+            className="overflow-hidden mt-4"
           >
             <div 
-              className="p-4 rounded-xl border"
-              style={{
-                backgroundColor: colors.muted,
-                borderColor: colors.border
+              className="p-8 rounded-[2rem] border backdrop-blur-xl"
+              style={{ 
+                backgroundColor: `${colors.surface}80`, 
+                borderColor: `${colors.border}40` 
               }}
             >
-              {/* Time Filter */}
-              <div className="mb-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Clock size={18} style={{ color: colors.textSecondary }} />
-                  <label 
-                    className="font-medium"
-                    style={{ color: colors.text }}
-                  >
-                    Maximum Cooking Time
-                  </label>
-                </div>
-                <div className="flex items-center gap-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                <div className="flex-1 space-y-4">
+                  <div className="flex justify-between items-end">
+                    <label className="text-xs font-black uppercase tracking-widest opacity-40">
+                      Prep Time Window
+                    </label>
+                    <span className="text-xl font-serif italic" style={{ color: colors.primary }}>
+                      {maxTime || 60} <span className="text-sm not-italic opacity-60">min</span>
+                    </span>
+                  </div>
+                  
                   <input
                     type="range"
                     min="5"
-                    max="240"
+                    max="180"
                     step="5"
-                    className="flex-1 h-2 rounded-lg appearance-none cursor-pointer"
-                    style={{
-                      backgroundColor: colors.border,
-                      accentColor: colors.primary
+                    className="w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-current"
+                    style={{ 
+                      backgroundColor: `${colors.primary}20`,
+                      color: colors.primary 
                     }}
                     value={maxTime || 60}
                     onChange={handleMaxTimeChange}
                   />
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      placeholder="Minutes"
-                      className="w-20 px-3 py-1.5 rounded-lg border text-center"
-                      style={{
-                        backgroundColor: colors.background,
-                        borderColor: colors.border,
-                        color: colors.text
-                      }}
-                      value={maxTime}
-                      onChange={handleMaxTimeChange}
-                    />
-                    <span style={{ color: colors.textSecondary }}>min</span>
-                  </div>
                 </div>
-                <div className="flex justify-between mt-2 text-sm">
-                  <span style={{ color: colors.textSecondary }}>5 min</span>
-                  <span style={{ color: colors.textSecondary }}>240 min</span>
-                </div>
-              </div>
 
-              {/* Quick Time Presets */}
-              <div className="flex flex-wrap gap-2">
-                {[15, 30, 45, 60, 90].map((time) => (
-                  <motion.button
-                    key={time}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="button"
-                    onClick={() => handleMaxTimeChange({ target: { value: time.toString() } })}
-                    className="px-3 py-1.5 rounded-lg font-medium transition-colors"
-                    style={{
-                      backgroundColor: maxTime === time.toString() 
-                        ? colors.primary 
-                        : colors.background,
-                      color: maxTime === time.toString() ? 'white' : colors.text,
-                      border: `1px solid ${colors.border}`
-                    }}
-                  >
-                    {time} min
-                  </motion.button>
-                ))}
+                <div className="flex flex-wrap gap-2 md:max-w-[240px]">
+                  {[15, 30, 45, 'reset'].map((time) => (
+                    <button
+                      key={time}
+                      onClick={() => time === 'reset' ? handleMaxTimeChange({ target: { value: '' } }) : handleMaxTimeChange({ target: { value: time.toString() } })}
+                      className="px-4 py-2 rounded-full text-xs font-bold border transition-all hover:italic"
+                      style={{ 
+                        borderColor: maxTime === time.toString() ? colors.primary : `${colors.border}40`,
+                        backgroundColor: maxTime === time.toString() ? colors.primary : 'transparent',
+                        color: maxTime === time.toString() ? '#fff' : colors.text
+                      }}
+                    >
+                      {time === 'reset' ? 'Clear' : `${time}m`}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Search Stats */}
-      <motion.div 
-        className="flex justify-between items-center mt-4 pt-4 border-t"
-        style={{ borderColor: colors.border }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-2 h-2 rounded-full animate-pulse"
-            style={{ backgroundColor: colors.accent }}
-          />
-          <span style={{ color: colors.textSecondary }} className="text-sm">
-            {searchTerm ? `Searching for: "${searchTerm}"` : 'Ready to search...'}
-          </span>
-        </div>
-        
-        {/* Character Count */}
-        <AnimatePresence>
-          {searchTerm && (
-            <motion.div
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              style={{ color: colors.textSecondary }}
-              className="text-sm"
+      {/* Subtle Search Status */}
+      <div className="mt-6 flex justify-center">
+        <AnimatePresence mode="wait">
+          {searchTerm.length > 0 && searchTerm.length < 3 ? (
+            <motion.p
+              key="tip"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              className="text-[10px] font-black uppercase tracking-[0.2em]"
             >
-              {searchTerm.length} character{searchTerm.length !== 1 ? 's' : ''}
+              Keep typing for precision...
+            </motion.p>
+          ) : (
+            <motion.div 
+              key="dot"
+              animate={{ opacity: [0.2, 0.5, 0.2] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="flex gap-1"
+            >
+              {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.text }} />)}
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
-
-      {/* Search Suggestions */}
-      <AnimatePresence>
-        {searchTerm.length > 0 && searchTerm.length < 3 && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="mt-3 p-3 rounded-lg"
-            style={{
-              backgroundColor: colors.accent + '10',
-              border: `1px solid ${colors.accent}20`
-            }}
-          >
-            <p className="text-sm flex items-center gap-2" style={{ color: colors.textSecondary }}>
-              <span>💡</span>
-              Try typing at least 3 characters for better results
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </motion.section>
   );
 };

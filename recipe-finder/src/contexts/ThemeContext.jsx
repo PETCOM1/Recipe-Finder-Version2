@@ -1,146 +1,114 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Define color palettes
 const colorPalettes = {
-  blue: {
-    primary: '#3B82F6',
-    secondary: '#64748B',
-    accent: '#F59E0B',
-    surface: '#FFFFFF',
-    muted: '#F8FAFC',
-    border: '#E2E8F0',
-    text: '#1E293B',
-    textSecondary: '#64748B',
-    background: '#FFFFFF',
+  // VELISH SIGNATURE: Earthy, warm, and boutique
+  signature: {
+    primary: '#D4A373',      // Warm Tan / Gold accent
+    secondary: '#CCD5AE',    // Sage Green
+    accent: '#E9EDC6',       // Creamy highlights
+    success: '#606C38',      // Forest Green (for healthy tags)
+    surface: '#FEFAE0',      // Off-white paper feel
+    muted: '#FAEDCD',        // Soft wheat
+    border: '#D4A373',       // Golden border
+    text: '#283618',         // Deep botanical green
+    textSecondary: '#606C38',
+    background: '#FEFAE0',
   },
-  green: {
-    primary: '#10B981',
-    secondary: '#64748B',
-    accent: '#F59E0B',
-    surface: '#FFFFFF',
-    muted: '#F0FDF4',
-    border: '#D1FAE5',
-    text: '#064E3B',
-    textSecondary: '#64748B',
-    background: '#FFFFFF',
+  // NOIR: Sophisticated high-contrast
+  noir: {
+    primary: '#FFFFFF',
+    secondary: '#A1A1AA',
+    accent: '#D4D4D8',
+    success: '#4ADE80',
+    surface: '#18181B',
+    muted: '#27272A',
+    border: '#3F3F46',
+    text: '#FAFAFA',
+    textSecondary: '#A1A1AA',
+    background: '#09090B',
   },
-  purple: {
-    primary: '#8B5CF6',
-    secondary: '#64748B',
-    accent: '#F59E0B',
+  // ROSE: Soft, elegant, and modern
+  rose: {
+    primary: '#FDA4AF',
+    secondary: '#94A3B8',
+    accent: '#F1F5F9',
+    success: '#10B981',
     surface: '#FFFFFF',
-    muted: '#FAF5FF',
-    border: '#E9D5FF',
-    text: '#581C87',
-    textSecondary: '#64748B',
-    background: '#FFFFFF',
-  },
-  red: {
-    primary: '#EF4444',
-    secondary: '#64748B',
-    accent: '#F59E0B',
-    surface: '#FFFFFF',
-    muted: '#FEF2F2',
-    border: '#FECACA',
-    text: '#991B1B',
-    textSecondary: '#64748B',
-    background: '#FFFFFF',
-  },
+    muted: '#FFF1F2',
+    border: '#FFE4E6',
+    text: '#4C0519',
+    textSecondary: '#9F1239',
+    background: '#FFF1F2',
+  }
 };
 
-const darkColorPalettes = {
-  blue: {
-    primary: '#60A5FA',
-    secondary: '#94A3B8',
-    accent: '#F59E0B',
-    surface: '#1E293B',
-    muted: '#334155',
-    border: '#475569',
-    text: '#F8FAFC',
-    textSecondary: '#CBD5E1',
-    background: '#111827',
-  },
-  green: {
-    primary: '#34D399',
-    secondary: '#94A3B8',
-    accent: '#F59E0B',
-    surface: '#1E293B',
-    muted: '#334155',
-    border: '#475569',
-    text: '#F8FAFC',
-    textSecondary: '#CBD5E1',
-    background: '#111827',
-  },
-  purple: {
-    primary: '#A78BFA',
-    secondary: '#94A3B8',
-    accent: '#F59E0B',
-    surface: '#1E293B',
-    muted: '#334155',
-    border: '#475569',
-    text: '#F8FAFC',
-    textSecondary: '#CBD5E1',
-    background: '#111827',
-  },
-  red: {
-    primary: '#F87171',
-    secondary: '#94A3B8',
-    accent: '#F59E0B',
-    surface: '#1E293B',
-    muted: '#334155',
-    border: '#475569',
-    text: '#F8FAFC',
-    textSecondary: '#CBD5E1',
-    background: '#111827',
-  },
+// Dark mode overrides for the Signature and Rose palettes
+const darkOverrides = {
+  signature: {
+    surface: '#1A1C14',
+    background: '#0D0E0A',
+    text: '#FEFAE0',
+    textSecondary: '#CCD5AE',
+    muted: '#283618',
+    border: '#606C38',
+  }
+  // Noir is already dark-based, Rose would need similar overrides
 };
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('light');
-  const [palette, setPalette] = useState('blue');
+  const [palette, setPalette] = useState('signature');
 
-  // Load theme and palette from localStorage on mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const savedPalette = localStorage.getItem('palette');
-    if (savedTheme) setTheme(savedTheme);
-    if (savedPalette) setPalette(savedPalette);
+    const savedTheme = localStorage.getItem('velish_theme') || 'light';
+    const savedPalette = localStorage.getItem('velish_palette') || 'signature';
+    setTheme(savedTheme);
+    setPalette(savedPalette);
   }, []);
 
-  // Save theme and palette to localStorage when they change
   useEffect(() => {
-    localStorage.setItem('theme', theme);
-    localStorage.setItem('palette', palette);
+    localStorage.setItem('velish_theme', theme);
+    localStorage.setItem('velish_palette', palette);
   }, [theme, palette]);
 
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  const colors = theme === 'dark' ? darkColorPalettes[palette] : colorPalettes[palette];
+  // Logic to merge palette base with dark mode overrides
+  const getColors = () => {
+    const base = colorPalettes[palette] || colorPalettes.signature;
+    if (theme === 'dark' && darkOverrides[palette]) {
+      return { ...base, ...darkOverrides[palette] };
+    }
+    // If it's Noir, it's inherently dark
+    if (palette === 'noir') return colorPalettes.noir;
+    return base;
+  };
 
   const value = {
     theme,
     palette,
-    colors,
+    colors: getColors(),
     toggleTheme,
     setPalette,
+    availablePalettes: Object.keys(colorPalettes)
   };
 
   return (
     <ThemeContext.Provider value={value}>
-      {children}
+      <div style={{ backgroundColor: value.colors.background, minHeight: '100vh', transition: 'background-color 0.5s ease' }}>
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 };
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
+  if (!context) throw new Error('useTheme must be used within a ThemeProvider');
   return context;
 };
 

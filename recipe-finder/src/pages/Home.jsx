@@ -1,14 +1,16 @@
-import Header from "../components/Header"
-import SearchBar from "../components/SearchBar"
-import RecipeCard from "../components/RecipeCard"
+import Header from "../components/Header";
+import SearchBar from "../components/SearchBar";
+import RecipeCard from "../components/RecipeCard";
 import Footer from "../components/Footer";
 import recipes from '../data/recipes.json';
 import { useMemo, useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ThemeContext from '../contexts/ThemeContext';
+import { motion, AnimatePresence } from "framer-motion";
+import { SearchX, ChevronLeft, ChevronRight } from "lucide-react";
 
 const Home = () => {
-  const { theme, colors } = useContext(ThemeContext);
+  const { colors } = useContext(ThemeContext);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [maxTime, setMaxTime] = useState('');
@@ -18,7 +20,6 @@ const Home = () => {
 
   const filteredRecipes = useMemo(() => {
     let results = recipes;
-
     const lowerSearch = searchTerm.toLowerCase();
 
     if (searchTerm) {
@@ -37,6 +38,7 @@ const Home = () => {
     return results;
   }, [searchTerm, maxTime]);
 
+  // Pagination calculations
   const totalPages = Math.ceil(filteredRecipes.length / recipesPerPage);
   const startIndex = (currentPage - 1) * recipesPerPage;
   const currentRecipes = filteredRecipes.slice(startIndex, startIndex + recipesPerPage);
@@ -53,20 +55,15 @@ const Home = () => {
 
   const toggleLike = (recipeId) => {
     setFavoriteIds((prev) => {
-      let updated;
-      if (prev.includes(recipeId)) {
-        updated = prev.filter(id => id !== recipeId);
-      } else {
-        updated = [...prev, recipeId];
-      }
+      const updated = prev.includes(recipeId)
+        ? prev.filter(id => id !== recipeId)
+        : [...prev, recipeId];
       localStorage.setItem('favorites', JSON.stringify(updated));
       return updated;
     });
   };
 
-  const handleOnClickOfRecipeCard = (recipeId) => {
-    navigate(`/recipe/${recipeId}`);
-  };
+  const handleOnClickOfRecipeCard = (recipeId) => navigate(`/recipe/${recipeId}`);
   
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -79,11 +76,11 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: colors.background, color: colors.text }}>
+    <div className="min-h-screen flex flex-col transition-colors duration-500" style={{ backgroundColor: colors.background, color: colors.text }}>
       <Header />
       
       <main className="flex-grow">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-12 max-w-7xl">
           <SearchBar 
             handleSearchChange={handleSearchChange} 
             searchTerm={searchTerm} 
@@ -91,82 +88,93 @@ const Home = () => {
             maxTime={maxTime} 
           />
           
-          {/* Recipe Grid */}
-          {currentRecipes.length > 0 ? (
-            <>
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-2">
-                  {filteredRecipes.length} Recipe{filteredRecipes.length !== 1 ? 's' : ''} Found
-                </h2>
-                {searchTerm && (
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Showing results for: "{searchTerm}"
-                  </p>
-                )}
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 mb-8">
-                {currentRecipes.map(recipe => (
-                  <RecipeCard
-                    key={recipe.id}
-                    recipe={{ ...recipe, liked: favoriteIds.includes(recipe.id) }}
-                    toggleLike={toggleLike}
-                    handleOnClickOfRecipeCard={handleOnClickOfRecipeCard}
-                  />
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-16">
-              <div className="text-6xl mb-4">🍳</div>
-              <h3 className="text-2xl font-bold mb-4">No Recipes Found</h3>
-              <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                {searchTerm ? 
-                  `We couldn't find any recipes matching "${searchTerm}". Try a different search term or clear the filters.` :
-                  "No recipes match your current filters. Try adjusting the maximum cooking time."}
-              </p>
-            </div>
-          )}
+          <div className="mt-12">
+            <AnimatePresence mode="wait">
+              {currentRecipes.length > 0 ? (
+                <motion.div
+                  key="grid"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                      <h2 className="text-4xl font-bold tracking-tighter lowercase italic">
+                        {searchTerm ? 'search results.' : 'latest recipes.'}
+                      </h2>
+                      <p className="text-sm opacity-50 font-medium uppercase tracking-widest mt-1">
+                        {filteredRecipes.length} culinary matches found
+                      </p>
+                    </div>
+                  </header>
 
-          {/* Pagination */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                    {currentRecipes.map(recipe => (
+                      <RecipeCard
+                        key={recipe.id}
+                        recipe={{ ...recipe, liked: favoriteIds.includes(recipe.id) }}
+                        toggleLike={toggleLike}
+                        handleOnClickOfRecipeCard={handleOnClickOfRecipeCard}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  key="empty"
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }}
+                  className="text-center py-24 px-6 rounded-[3rem] border-2 border-dashed"
+                  style={{ borderColor: `${colors.border}40` }}
+                >
+                  <div className="inline-flex p-6 rounded-full mb-6" style={{ backgroundColor: `${colors.primary}10` }}>
+                    <SearchX size={48} style={{ color: colors.primary }} />
+                  </div>
+                  <h3 className="text-3xl font-bold lowercase italic mb-3">nothing in the pantry.</h3>
+                  <p className="max-w-md mx-auto opacity-60 text-sm leading-relaxed">
+                    We couldn't find any recipes matching your criteria. Try widening your search or adjusting the cooking time.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Boutique Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-8 mb-12">
+            <div className="flex justify-center items-center gap-3 mt-20 mb-12">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  currentPage === 1 
-                    ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed' 
-                    : 'bg-blue-500 hover:bg-blue-600 text-white shadow-md hover:shadow-lg'
-                }`}
+                className="p-3 rounded-full transition-all disabled:opacity-20"
+                style={{ backgroundColor: `${colors.primary}15`, color: colors.primary }}
               >
-                Previous
+                <ChevronLeft size={20} strokeWidth={3} />
               </button>
               
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-4 py-2 min-w-[44px] rounded-lg font-medium transition-all ${
-                    currentPage === page 
-                      ? 'bg-blue-600 text-white shadow-lg' 
-                      : 'bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              <div className="flex gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className="w-10 h-10 rounded-full text-xs font-black transition-all"
+                    style={{ 
+                      backgroundColor: currentPage === page ? colors.primary : 'transparent',
+                      color: currentPage === page ? '#fff' : colors.text,
+                      border: currentPage === page ? 'none' : `1px solid ${colors.border}40`
+                    }}
+                  >
+                    {String(page).padStart(2, '0')}
+                  </button>
+                ))}
+              </div>
               
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  currentPage === totalPages 
-                    ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed' 
-                    : 'bg-blue-500 hover:bg-blue-600 text-white shadow-md hover:shadow-lg'
-                }`}
+                className="p-3 rounded-full transition-all disabled:opacity-20"
+                style={{ backgroundColor: `${colors.primary}15`, color: colors.primary }}
               >
-                Next
+                <ChevronRight size={20} strokeWidth={3} />
               </button>
             </div>
           )}

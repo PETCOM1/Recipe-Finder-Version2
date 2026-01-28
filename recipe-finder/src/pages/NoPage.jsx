@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { motion } from 'framer-motion';
-import { ChefHat, Home, Utensils, AlertCircle, Search } from 'lucide-react';
+import { ChefHat, Home, Utensils, Search, Wind } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -9,361 +9,122 @@ const NoPage = () => {
   const { colors, theme } = useTheme();
   const navigate = useNavigate();
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        duration: 0.8
-      }
+      transition: { staggerChildren: 0.15, duration: 0.8 }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
+    hidden: { y: 30, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
+      transition: { type: "spring", stiffness: 100, damping: 15 }
     }
   };
-
-  const floatingAnimation = {
-    float: {
-      y: [0, -30, 0],
-      rotate: [0, 5, -5, 0],
-      transition: {
-        duration: 4,
-        ease: "easeInOut",
-        repeat: Infinity,
-        repeatDelay: 0.5
-      }
-    }
-  };
-
-  const spinningAnimation = {
-    spin: {
-      rotate: 360,
-      transition: {
-        duration: 20,
-        repeat: Infinity,
-        ease: "linear"
-      }
-    }
-  };
-
-  const brokenIngredients = [
-    { emoji: '🍳', delay: 0, size: 40 },
-    { emoji: '🥘', delay: 0.2, size: 36 },
-    { emoji: '🍲', delay: 0.4, size: 38 },
-    { emoji: '🧊', delay: 0.6, size: 32 },
-    { emoji: '🔥', delay: 0.8, size: 34 },
-  ];
-
-  const helpfulLinks = [
-    { label: 'All Recipes', path: '/', icon: <Utensils size={20} /> },
-    { label: 'Favorites', path: '/favorites', icon: <ChefHat size={20} /> },
-    { label: 'Search Recipes', path: '/', icon: <Search size={20} /> },
-  ];
-
-  const errorMessages = [
-    "Recipe not found!",
-    "404: Kitchen Error",
-    "Page went up in smoke!",
-    "Lost in the pantry!",
-    "Page evaporated!",
-  ];
-
-  const randomMessage = errorMessages[Math.floor(Math.random() * errorMessages.length)];
 
   return (
     <motion.div
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="min-h-screen overflow-hidden relative"
+      className="min-h-screen relative flex flex-col"
       style={{ backgroundColor: colors.background, color: colors.text }}
     >
       <Header />
       
-      {/* Animated background */}
+      {/* Subtle Atmospheric Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Broken ingredients floating */}
-        {brokenIngredients.map((ingredient, index) => (
-          <motion.div
-            key={index}
-            variants={floatingAnimation}
-            initial="float"
-            animate="float"
-            transition={{ delay: ingredient.delay }}
-            className="absolute text-3xl opacity-20"
-            style={{
-              left: `${10 + index * 18}%`,
-              top: `${20 + Math.sin(index) * 30}%`,
-              fontSize: ingredient.size,
-              filter: 'blur(1px)'
+         <motion.div 
+            animate={{ 
+              scale: [1, 1.1, 1],
+              opacity: [0.05, 0.1, 0.05]
             }}
-          >
-            {ingredient.emoji}
-          </motion.div>
-        ))}
-        
-        {/* Spinning warning signs */}
-        {[1, 2, 3].map((i) => (
-          <motion.div
-            key={i}
-            variants={spinningAnimation}
-            animate="spin"
-            className="absolute opacity-10"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              color: colors.primary
-            }}
-          >
-            <AlertCircle size={60 + i * 20} />
-          </motion.div>
-        ))}
+            transition={{ duration: 8, repeat: Infinity }}
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px]"
+            style={{ backgroundColor: colors.primary }}
+         />
       </div>
 
-      {/* Main content */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <motion.div
-          variants={itemVariants}
-          className="text-center mb-8"
-        >
-          {/* Animated number 404 */}
-          <div className="relative inline-block">
-            <motion.div
-              animate={{
-                scale: [1, 1.2, 1],
-                rotate: [0, 5, -5, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                repeatDelay: 2
-              }}
-              className="text-[160px] md:text-[240px] font-bold leading-none"
-              style={{
-                background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent} 50%, ${colors.secondary} 100%)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.3))'
-              }}
-            >
-              404
-            </motion.div>
-            
-            {/* Crack effect on numbers */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="absolute top-1/2 left-0 right-0 h-1 transform -translate-y-1/2"
-              style={{
-                background: `linear-gradient(90deg, transparent, ${colors.error}, transparent)`,
-                transformOrigin: 'left'
-              }}
-            />
-          </div>
-
-          {/* Error message */}
-          <motion.h2
-            variants={itemVariants}
-            className="text-3xl md:text-4xl font-bold mt-4 mb-6"
+      <main className="relative z-10 flex-grow flex flex-col items-center justify-center px-6 py-20 text-center">
+        
+        {/* The 404 Visual */}
+        <motion.div variants={itemVariants} className="relative mb-8">
+          <h1 
+            className="text-[12rem] md:text-[18rem] font-black leading-none tracking-tighter italic opacity-10"
             style={{ color: colors.text }}
           >
-            {randomMessage}
-          </motion.h2>
-
-          {/* Cooking-themed message */}
-          <motion.p
-            variants={itemVariants}
-            className="text-xl max-w-2xl mx-auto mb-8"
-            style={{ color: colors.textSecondary }}
-          >
-            Looks like this recipe page got a bit too hot to handle! 
-            The page you're looking for might have simmered away or been whisked into another dimension.
-          </motion.p>
-        </motion.div>
-
-        {/* Chef hat animation */}
-        <motion.div
-          variants={itemVariants}
-          className="relative mb-12"
-        >
-          <motion.div
-            animate={{
-              y: [0, -20, 0],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          >
-            <ChefHat 
-              size={80}
-              style={{ 
-                color: colors.primary,
-                filter: `drop-shadow(0 8px 24px ${colors.primary}40)`
-              }}
-            />
-          </motion.div>
-          
-          {/* Floating bubbles */}
-          <motion.div
-            animate={{
-              y: [0, -40, 0],
-              opacity: [0.3, 0.8, 0.3]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute -top-4 -left-4 w-6 h-6 rounded-full"
-            style={{ backgroundColor: colors.accent }}
-          />
-          <motion.div
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.3, 0.8, 0.3]
-            }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.5
-            }}
-            className="absolute -top-2 -right-4 w-4 h-4 rounded-full"
-            style={{ backgroundColor: colors.secondary }}
-          />
-        </motion.div>
-
-        {/* Helpful links */}
-        <motion.div
-          variants={itemVariants}
-          className="w-full max-w-2xl mb-12"
-        >
-          <h3 className="text-xl font-bold mb-6 text-center" style={{ color: colors.text }}>
-            Try one of these delicious alternatives:
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {helpfulLinks.map((link, index) => (
-              <motion.button
-                key={link.label}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.8 + index * 0.1 }}
-                whileHover={{ y: -5, scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate(link.path)}
-                className="flex flex-col items-center justify-center p-6 rounded-2xl shadow-lg transition-all"
-                style={{
-                  backgroundColor: colors.surface,
-                  border: `2px solid ${colors.border}`,
-                  boxShadow: `0 8px 32px ${theme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.1)'}`
-                }}
-              >
-                <div className="p-3 rounded-full mb-3"
-                  style={{ backgroundColor: colors.muted }}
-                >
-                  {link.icon}
-                </div>
-                <span className="font-bold text-lg" style={{ color: colors.text }}>
-                  {link.label}
-                </span>
-              </motion.button>
-            ))}
+            404
+          </h1>
+          <div className="absolute inset-0 flex items-center justify-center">
+             <motion.div
+               animate={{ y: [0, -15, 0] }}
+               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+             >
+                <ChefHat size={120} strokeWidth={1} style={{ color: colors.primary }} />
+             </motion.div>
           </div>
         </motion.div>
 
-        {/* Main action button */}
+        {/* Messaging */}
+        <motion.div variants={itemVariants} className="max-w-xl space-y-4">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter lowercase italic">
+            this recipe <span style={{ color: colors.primary }}>evaporated.</span>
+          </h2>
+          <p className="text-sm md:text-base opacity-60 leading-relaxed uppercase tracking-[0.2em] font-bold">
+            The page you're looking for was whisked away into another dimension.
+          </p>
+        </motion.div>
+
+        {/* Curated Alternatives */}
+        <motion.div 
+          variants={itemVariants}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl mt-12"
+        >
+          {[
+            { label: 'Explore All', path: '/', icon: <Utensils size={18} /> },
+            { label: 'The Vault', path: '/favorites', icon: <ChefHat size={18} /> },
+            { label: 'New Search', path: '/', icon: <Search size={18} /> },
+          ].map((link) => (
+            <button
+              key={link.label}
+              onClick={() => navigate(link.path)}
+              className="group flex flex-col items-center gap-3 p-8 rounded-[2rem] border transition-all hover:scale-105"
+              style={{ 
+                backgroundColor: `${colors.surface}80`, 
+                borderColor: `${colors.border}40`,
+                backdropFilter: 'blur(10px)'
+              }}
+            >
+              <div 
+                className="p-4 rounded-full transition-colors group-hover:bg-white/10"
+                style={{ backgroundColor: `${colors.primary}15`, color: colors.primary }}
+              >
+                {link.icon}
+              </div>
+              <span className="text-xs font-black uppercase tracking-widest">{link.label}</span>
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Primary CTA */}
         <motion.button
           variants={itemVariants}
-          whileHover={{ scale: 1.05, y: -5 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => navigate('/')}
-          className="group relative px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl overflow-hidden"
-          style={{
-            backgroundColor: colors.primary,
-            color: 'white',
-            boxShadow: `0 12px 40px ${colors.primary}60`
-          }}
+          className="mt-16 px-10 py-5 rounded-full font-black text-xs uppercase tracking-[0.3em] flex items-center gap-3 shadow-xl transition-all"
+          style={{ backgroundColor: colors.primary, color: 'white' }}
         >
-          {/* Animated background effect */}
-          <motion.div
-            className="absolute inset-0"
-            style={{
-              background: `linear-gradient(90deg, transparent, ${colors.accent}40, transparent)`,
-              backgroundSize: '200% 100%'
-            }}
-            animate={{
-              backgroundPosition: ['200% 0', '-200% 0']
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          />
-          
-          <div className="relative z-10 flex items-center gap-3">
-            <Home size={24} />
-            <span>Back to Kitchen</span>
-          </div>
+          <Home size={16} />
+          Return to Kitchen
         </motion.button>
 
-        {/* Fun message */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="mt-8 text-center"
-          style={{ color: colors.textSecondary }}
-        >
-          <p className="italic">
-            Don't worry, our chefs are already working on fixing this recipe!
-          </p>
-          <div className="flex justify-center gap-2 mt-4">
-            {['👨‍🍳', '👩‍🍳', '🍳', '🔥'].map((emoji, i) => (
-              <motion.span
-                key={i}
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{
-                  duration: 2,
-                  delay: i * 0.2,
-                  repeat: Infinity,
-                  repeatDelay: 3
-                }}
-                className="text-2xl"
-              >
-                {emoji}
-            </motion.span>
-            ))}
-          </div>
-        </motion.div>
-      </div>
+      </main>
 
-      {/* Bottom decorative gradient */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="fixed bottom-0 left-0 right-0 h-48 pointer-events-none"
-        style={{
-          background: `linear-gradient(to top, ${colors.background} 0%, transparent 100%)`
-        }}
-      />
       <Footer />
     </motion.div>
   );

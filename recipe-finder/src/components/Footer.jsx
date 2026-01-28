@@ -9,132 +9,72 @@ import {
   Mail, 
   ChefHat,
   Coffee,
-  Utensils 
+  Utensils,
+  ArrowUpRight,
+  Leaf
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const { theme, colors } = useTheme();
 
-  const footerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
-  };
+  const softCurve = [0.23, 1, 0.32, 1];
 
   const socialLinks = [
-    { icon: Github, label: 'GitHub', href: 'https://github.com', color: theme === 'dark' ? '#f0f0f0' : '#333' },
-    { icon: Twitter, label: 'Twitter', href: 'https://twitter.com', color: '#1DA1F2' },
-    { icon: Instagram, label: 'Instagram', href: 'https://instagram.com', color: '#E1306C' },
-    { icon: Mail, label: 'Email', href: 'mailto:contact@recipefinder.com', color: '#EA4335' },
-  ];
-
-  const quickLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'Browse Recipes', path: '/recipes' },
-    { label: 'Categories', path: '/categories' },
-    { label: 'Favorites', path: '/favorites' },
-    { label: 'About Us', path: '/about' },
-    { label: 'Contact', path: '/contact' },
-  ];
-
-  const featureLinks = [
-    { label: 'Meal Planner', icon: Utensils },
-    { label: 'Shopping List', icon: ChefHat },
-    { label: 'Nutrition Info', icon: Coffee },
+    { icon: Github, label: 'GitHub', href: '#' },
+    { icon: Twitter, label: 'Twitter', href: '#' },
+    { icon: Instagram, label: 'Instagram', href: '#' },
+    { icon: Mail, label: 'Email', href: '#' },
   ];
 
   return (
     <motion.footer
-      initial="hidden"
-      whileInView="visible"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
-      variants={footerVariants}
-      className="mt-16"
+      className="relative mt-32 pb-24 md:pb-12 px-6"
       style={{
         backgroundColor: colors.surface,
-        borderTop: `1px solid ${colors.border}`,
+        borderTop: `1px solid ${colors.border}40`,
       }}
     >
-      {/* Wave Divider */}
-      <div className="relative overflow-hidden">
-        <svg 
-          viewBox="0 0 1200 120" 
-          preserveAspectRatio="none" 
-          className="w-full h-12"
-          style={{ 
-            fill: colors.surface,
-            stroke: colors.border,
-            strokeWidth: '1px'
-          }}
-        >
-          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
-        </svg>
+      {/* Decorative Brand Element - Large Background Text */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.03] overflow-hidden w-full text-center">
+        <span className="text-[15vw] font-black italic lowercase tracking-tighter">
+          velish.
+        </span>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="max-w-6xl mx-auto pt-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8">
           
-          {/* Brand Section */}
-          <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-3 no-underline group">
+          {/* Brand & Mission: Taking up 5 columns */}
+          <div className="lg:col-span-5 space-y-8">
+            <Link to="/" className="flex items-center gap-3 no-underline group w-fit">
               <motion.div
-                animate={{ rotate: [0, 10, 0] }}
-                transition={{ repeat: Infinity, repeatDelay: 5, duration: 3 }}
-                className="relative"
+                whileHover={{ rotate: 15, scale: 1.1 }}
+                className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl"
+                style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}
               >
-                <div 
-                  className="w-12 h-12 rounded-full p-1"
-                  style={{ 
-                    background: `linear-gradient(45deg, ${colors.primary}, ${colors.accent})`,
-                  }}
-                >
-                  <div className="w-full h-full rounded-full overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center">
-                    <ChefHat 
-                      size={24} 
-                      style={{ color: colors.primary }}
-                    />
-                  </div>
-                </div>
+                <Leaf size={24} color="white" fill="white" />
               </motion.div>
-              <div>
-                <h3 className="text-xl font-bold" style={{ color: colors.primary }}>
-                  RecipeFinder
-                </h3>
-                <p className="text-sm opacity-80" style={{ color: colors.text }}>
-                  Cook. Share. Enjoy.
-                </p>
-              </div>
+              <span className="text-3xl font-black tracking-tighter lowercase italic" style={{ color: colors.text }}>
+                velish<span style={{ color: colors.primary }}>.</span>
+              </span>
             </Link>
-            <p className="text-sm" style={{ color: colors.text, opacity: 0.8 }}>
-              Discover amazing recipes from around the world. Join our community of food lovers and share your culinary creations.
-            </p>
             
-            {/* Social Links */}
-            <div className="flex gap-3 pt-2">
-              {socialLinks.map((social, index) => (
+            <h2 className="text-2xl md:text-3xl font-medium leading-tight max-w-md" style={{ color: colors.text }}>
+              Elevating your daily <span className="italic font-serif" style={{ color: colors.primary }}>culinary</span> ritual.
+            </h2>
+
+            <div className="flex gap-4">
+              {socialLinks.map((social) => (
                 <motion.a
                   key={social.label}
                   href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -3, scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-2 rounded-lg transition-colors"
-                  style={{ 
-                    backgroundColor: colors.muted,
-                    color: social.color || colors.text,
-                  }}
-                  aria-label={social.label}
+                  whileHover={{ y: -5, backgroundColor: colors.primary, color: '#fff' }}
+                  className="w-10 h-10 rounded-full border flex items-center justify-center transition-colors duration-300"
+                  style={{ borderColor: `${colors.border}80`, color: colors.text }}
                 >
                   <social.icon size={18} />
                 </motion.a>
@@ -142,173 +82,84 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4" style={{ color: colors.primary }}>
-              Quick Links
-            </h4>
-            <ul className="space-y-2">
-              {quickLinks.map((link, index) => (
-                <motion.li
-                  key={link.label}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link
-                    to={link.path}
-                    className="flex items-center gap-2 text-sm hover:gap-3 transition-all duration-300 no-underline group"
-                    style={{ color: colors.text }}
-                  >
-                    <motion.div
-                      className="w-1 h-1 rounded-full opacity-0 group-hover:opacity-100"
-                      style={{ backgroundColor: colors.accent }}
-                      animate={{ scale: [1, 1.5, 1] }}
-                      transition={{ repeat: Infinity, duration: 1.5 }}
-                    />
-                    {link.label}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Features */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4" style={{ color: colors.primary }}>
-              Features
-            </h4>
-            <ul className="space-y-3">
-              {featureLinks.map((feature, index) => (
-                <motion.li
-                  key={feature.label}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-3"
-                >
-                  <div 
-                    className="p-2 rounded-lg"
-                    style={{ 
-                      backgroundColor: colors.muted,
-                      color: colors.accent,
-                    }}
-                  >
-                    <feature.icon size={16} />
-                  </div>
-                  <span className="text-sm" style={{ color: colors.text }}>
-                    {feature.label}
-                  </span>
-                </motion.li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4" style={{ color: colors.primary }}>
-              Stay Updated
-            </h4>
-            <p className="text-sm mb-4" style={{ color: colors.text, opacity: 0.8 }}>
-              Get weekly recipes, cooking tips, and exclusive content.
-            </p>
-            <form className="space-y-3">
-              <motion.div whileHover={{ scale: 1.02 }}>
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    backgroundColor: colors.muted,
-                    color: colors.text,
-                    border: `1px solid ${colors.border}`,
-                    '--tw-ring-color': colors.accent,
-                  }}
+          {/* Navigation: Taking up 7 columns */}
+          <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8">
+            <FooterColumn 
+              title="Explore" 
+              links={['Recipes', 'Categories', 'Collections', 'Meal Plans']} 
+              colors={colors} 
+            />
+            <FooterColumn 
+              title="Company" 
+              links={['Our Story', 'Careers', 'Contact', 'Journal']} 
+              colors={colors} 
+            />
+            {/* Newsletter Mini-Widget */}
+            <div className="col-span-2 md:col-span-1 space-y-4">
+              <h4 className="text-xs font-black uppercase tracking-[0.2em] opacity-40" style={{ color: colors.text }}>
+                Stay Inspired
+              </h4>
+              <div className="relative group">
+                <input 
+                  type="text" 
+                  placeholder="Email address"
+                  className="w-full bg-transparent border-b py-2 focus:outline-none transition-colors text-sm"
+                  style={{ borderColor: `${colors.border}80`, color: colors.text }}
                 />
-              </motion.div>
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full px-4 py-3 rounded-xl font-medium text-sm transition-all"
-                style={{
-                  backgroundColor: colors.primary,
-                  color: '#FFFFFF',
-                }}
-              >
-                Subscribe
-              </motion.button>
-            </form>
+                <button className="absolute right-0 top-1/2 -translate-y-1/2">
+                  <ArrowUpRight size={18} style={{ color: colors.primary }} />
+                </button>
+              </div>
+              <p className="text-[10px] opacity-50 uppercase tracking-widest leading-relaxed">
+                Join 10k+ food lovers for our weekly digest.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Divider */}
+        {/* Bottom Credits */}
         <div 
-          className="my-8 h-px" 
-          style={{ 
-            background: `linear-gradient(90deg, transparent, ${colors.border}, transparent)`,
-          }}
-        />
-
-        {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm flex items-center gap-1" style={{ color: colors.text, opacity: 0.7 }}>
-            © {new Date().getFullYear()} RecipeFinder. Made with
-            <Heart 
-              size={14} 
-              className="inline-block mx-1 animate-pulse"
-              style={{ color: colors.accent }}
-            />
-            for food lovers everywhere.
-          </p>
-          
-          <div className="flex gap-6 text-sm">
-            <Link 
-              to="/privacy" 
-              className="hover:underline transition-all"
-              style={{ color: colors.text, opacity: 0.7 }}
-            >
-              Privacy Policy
-            </Link>
-            <Link 
-              to="/terms" 
-              className="hover:underline transition-all"
-              style={{ color: colors.text, opacity: 0.7 }}
-            >
-              Terms of Service
-            </Link>
-            <Link 
-              to="/cookies" 
-              className="hover:underline transition-all"
-              style={{ color: colors.text, opacity: 0.7 }}
-            >
-              Cookie Policy
-            </Link>
+          className="mt-24 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 border-t"
+          style={{ borderColor: `${colors.border}20` }}
+        >
+          <div className="flex gap-8 text-[10px] font-bold uppercase tracking-[0.15em] opacity-40">
+            <Link to="/privacy" className="no-underline hover:opacity-100 transition-opacity" style={{ color: colors.text }}>Privacy</Link>
+            <Link to="/terms" className="no-underline hover:opacity-100 transition-opacity" style={{ color: colors.text }}>Terms</Link>
+            <Link to="/cookies" className="no-underline hover:opacity-100 transition-opacity" style={{ color: colors.text }}>Cookies</Link>
           </div>
-        </div>
 
-        {/* Decorative Elements */}
-        <div className="flex justify-center gap-6 mt-8 opacity-50">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <motion.div
-              key={i}
-              className="w-1 h-1 rounded-full"
-              style={{ backgroundColor: colors.accent }}
-              animate={{
-                y: [0, -4, 0],
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                delay: i * 0.2,
-              }}
-            />
-          ))}
+          <p className="text-[11px] font-medium tracking-wide opacity-50 flex items-center gap-2" style={{ color: colors.text }}>
+            © {new Date().getFullYear()} VELISH STUDIO. BORN IN PARIS.
+            <Heart size={10} fill={colors.accent} color={colors.accent} />
+          </p>
         </div>
       </div>
     </motion.footer>
   );
 };
+
+// Sub-component for clean mapping
+const FooterColumn = ({ title, links, colors }) => (
+  <div className="space-y-5">
+    <h4 className="text-xs font-black uppercase tracking-[0.2em] opacity-40" style={{ color: colors.text }}>
+      {title}
+    </h4>
+    <ul className="space-y-3 p-0 list-none">
+      {links.map(link => (
+        <li key={link}>
+          <Link 
+            to="#" 
+            className="text-sm font-medium no-underline hover:italic transition-all duration-300 block w-fit"
+            style={{ color: colors.text }}
+          >
+            <motion.span whileHover={{ x: 5 }} className="inline-block">
+              {link}
+            </motion.span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
 export default Footer;

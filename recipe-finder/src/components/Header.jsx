@@ -1,265 +1,166 @@
-import { Sun, Moon, Home, Heart, Menu, X } from 'lucide-react';
+import { Sun, Moon, Home, Heart, Leaf } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Custom Easing for that "Premium" feel
+const transition = { type: "spring", stiffness: 260, damping: 30 };
+const softCurve = [0.23, 1, 0.32, 1]; // Power4 easeOut equivalent
+
 const Header = () => {
   const { theme, toggleTheme, colors } = useTheme();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Handle scroll for header shadow
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Prevent body scroll when menu is open
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    };
-  }, [isMenuOpen]);
 
   const navItems = [
     { label: 'Home', icon: Home, path: '/' },
     { label: 'Favorites', icon: Heart, path: '/favorites' },
   ];
 
-  // Bottom navigation for mobile (like native apps)
-  const MobileBottomNav = () => (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t"
-      style={{
-        backgroundColor: colors.surface,
-        borderColor: colors.border,
-        boxShadow: `0 -2px 10px ${colors.border}20`,
-      }}>
-      <div className="flex justify-around items-center h-16 px-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = currentPath === item.path;
-          
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="flex flex-col items-center justify-center flex-1 no-underline relative p-2"
-            >
-              <div className="relative">
-                <Icon 
-                  size={22} 
-                  style={{ 
-                    color: isActive ? colors.primary : colors.text + '80'
-                  }} 
-                />
-                {isActive && (
-                  <motion.div
-                    layoutId="bottom-nav-indicator"
-                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: colors.primary }}
-                  />
-                )}
-              </div>
-              <span 
-                className="text-xs mt-1 font-medium"
-                style={{ 
-                  color: isActive ? colors.primary : colors.text + '80',
-                  opacity: isActive ? 1 : 0.8
-                }}
-              >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
-        
-        <button
-          onClick={toggleTheme}
-          className="flex flex-col items-center justify-center flex-1 p-2"
-          aria-label="Toggle theme"
-        >
-          <div className="relative">
-            {theme === 'dark' ? (
-              <Sun size={22} className="text-amber-300" />
-            ) : (
-              <Moon size={22} className="text-slate-700" />
-            )}
-          </div>
-          <span 
-            className="text-xs mt-1 font-medium"
-            style={{ 
-              color: colors.text + '80',
-              opacity: 0.8
-            }}
-          >
-            Theme
-          </span>
-        </button>
-      </div>
-    </nav>
-  );
-
   return (
     <>
-      {/* Main Header - Simplified for mobile */}
       <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-200 ${
-          isScrolled ? 'backdrop-blur-lg' : 'backdrop-blur-sm'
-        }`}
-        style={{
-          backgroundColor: isScrolled ? colors.surface + 'CC' : colors.surface + 'E6',
-          borderBottom: `1px solid ${colors.border}30`,
-          boxShadow: isScrolled ? `0 4px 12px ${colors.border}15` : 'none',
-          height: '60px',
-        }}
+        initial={{ y: -30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: softCurve }}
+        className="fixed top-0 left-0 right-0 z-50 px-6 pt-5 pointer-events-none"
       >
-        <div className="container mx-auto px-4 h-full">
-          <div className="flex items-center justify-between h-full">
-            
-            {/* Logo - Minimal on mobile */}
-            <Link 
-              to="/" 
-              className="flex items-center gap-2 no-underline"
-              aria-label="Recipe Finder - Home"
+        <motion.div 
+          layout // Smoothly animates height/width changes
+          className={`container mx-auto max-w-5xl rounded-[2.5rem] flex items-center justify-between px-8 pointer-events-auto transition-shadow duration-500 ${
+            isScrolled ? 'shadow-[0_20px_50px_rgba(0,0,0,0.1)]' : 'shadow-none'
+          }`}
+          style={{
+            backgroundColor: isScrolled ? `${colors.surface}F2` : `${colors.surface}80`,
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: `1px solid ${colors.border}${isScrolled ? '60' : '20'}`,
+            height: isScrolled ? '64px' : '80px',
+          }}
+        >
+          {/* Logo with Magnetic Hover */}
+          <Link to="/" className="no-underline group">
+            <motion.div 
+              className="flex items-center gap-3"
+              whileHover={{ x: 3 }}
+              transition={transition}
             >
-              <div className="relative">
-                <motion.div
-                  animate={{ rotate: [0, 10, 0] }}
-                  transition={{ repeat: Infinity, repeatDelay: 8, duration: 4 }}
-                  className="overflow-hidden rounded-full"
-                  style={{ 
-                    background: `linear-gradient(45deg, ${colors.primary}, ${colors.accent})`,
-                    width: '36px',
-                    height: '36px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <img
-                    src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTFpZzhocmxzOHl0eXZydXZlajI3cGEwcG9zY2R3empwbWt2a2ZhaiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/v8jIlDELZYmTxjqmUH/giphy.gif"
-                    alt="Cooking animation"
-                    className="w-8 h-8 rounded-full object-cover"
-                    loading="eager"
-                  />
-                </motion.div>
-              </div>
-              <span 
-                className="hidden sm:inline-block text-lg font-bold"
-                style={{ color: colors.primary }}
+              <motion.div
+                whileHover={{ rotate: 180 }}
+                transition={{ duration: 0.6, ease: softCurve }}
+                className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}
               >
-                RecipeFinder
+                <Leaf size={18} color="white" fill="white" />
+              </motion.div>
+              <span className="text-2xl font-black tracking-tighter lowercase italic" style={{ color: colors.text }}>
+                velish<span style={{ color: colors.primary }}>.</span>
               </span>
-            </Link>
+            </motion.div>
+          </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-2">
+          {/* Nav Items */}
+          <div className="hidden md:flex items-center gap-2">
+            <nav className="flex items-center bg-black/[0.03] dark:bg-white/[0.03] p-1.5 rounded-full">
               {navItems.map((item) => {
-                const Icon = item.icon;
                 const isActive = currentPath === item.path;
-                
                 return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className="no-underline relative"
-                    aria-current={isActive ? 'page' : undefined}
-                  >
-                    <motion.div
-                      whileHover={{ y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`
-                        flex items-center gap-2 px-4 py-2.5 rounded-xl
-                        font-medium transition-all duration-200
-                        ${isActive ? 'shadow-sm' : 'hover:shadow-sm'}
-                      `}
-                      style={{
-                        backgroundColor: isActive ? colors.primary : 'transparent',
-                        color: isActive ? '#FFFFFF' : colors.text,
-                      }}
+                  <Link key={item.path} to={item.path} className="relative px-6 py-2 no-underline group">
+                    <span 
+                      className="relative z-10 text-sm font-bold tracking-tight transition-colors duration-500"
+                      style={{ color: isActive ? (theme === 'dark' ? '#000' : '#fff') : colors.text }}
                     >
-                      <Icon size={18} />
-                      <span>{item.label}</span>
-                      {isActive && (
-                        <motion.div
-                          layoutId="active-indicator"
-                          className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
-                          style={{ backgroundColor: colors.accent }}
-                        />
-                      )}
-                    </motion.div>
+                      {item.label}
+                    </span>
+                    {isActive && (
+                      <motion.div 
+                        layoutId="activePill"
+                        className="absolute inset-0 rounded-full shadow-lg"
+                        style={{ backgroundColor: colors.text }}
+                        transition={{ ...transition, stiffness: 300 }}
+                      />
+                    )}
                   </Link>
                 );
               })}
-              
-              {/* Desktop Theme Toggle */}
-              <motion.button
-                onClick={toggleTheme}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2.5 rounded-xl hover:shadow-sm transition-shadow"
-                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-                style={{
-                  backgroundColor: colors.muted,
-                  color: colors.text,
-                }}
-              >
-                {theme === 'dark' ? (
-                  <Sun size={20} className="text-amber-300" />
-                ) : (
-                  <Moon size={20} className="text-slate-700" />
-                )}
-              </motion.button>
             </nav>
 
-            {/* Mobile: Only show theme toggle and menu button if not using bottom nav */}
-            <div className="flex items-center gap-3 md:hidden">
-              <motion.button
-                onClick={toggleTheme}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg"
-                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-                style={{
-                  backgroundColor: colors.muted,
-                  color: colors.text,
-                }}
-              >
-                {theme === 'dark' ? (
-                  <Sun size={20} className="text-amber-300" />
-                ) : (
-                  <Moon size={20} className="text-slate-700" />
-                )}
-              </motion.button>
-            </div>
+            {/* Icon Transitions */}
+            <motion.button
+              onClick={toggleTheme}
+              className="ml-2 w-10 h-10 rounded-full flex items-center justify-center overflow-hidden"
+              whileHover={{ backgroundColor: `${colors.muted}90` }}
+              whileTap={{ scale: 0.9 }}
+              style={{ color: colors.text }}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={theme}
+                  initial={{ y: 20, opacity: 0, rotate: 45 }}
+                  animate={{ y: 0, opacity: 1, rotate: 0 }}
+                  exit={{ y: -20, opacity: 0, rotate: -45 }}
+                  transition={{ duration: 0.4, ease: softCurve }}
+                >
+                  {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                </motion.div>
+              </AnimatePresence>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
       </motion.header>
 
-      {/* Mobile Bottom Navigation - Always visible */}
-      <MobileBottomNav />
+      {/* Mobile Dock - Floating & Elastic */}
+      <AnimatePresence>
+        <motion.nav 
+          initial={{ y: 100, x: '-50%', opacity: 0 }}
+          animate={{ y: 0, x: '-50%', opacity: 1 }}
+          transition={{ delay: 0.5, duration: 1, ease: softCurve }}
+          className="fixed bottom-8 left-1/2 z-50 md:hidden w-[85%] max-w-[320px]"
+        >
+          <div 
+            className="flex items-center justify-around p-2 rounded-[2.5rem] border shadow-[0_20px_50px_rgba(0,0,0,0.2)]"
+            style={{ 
+              backgroundColor: `${colors.surface}F2`, 
+              borderColor: `${colors.border}60`,
+              backdropFilter: 'blur(20px)',
+            }}
+          >
+            {navItems.map((item) => {
+              const isActive = currentPath === item.path;
+              return (
+                <Link key={item.path} to={item.path} className="relative py-3 px-6 rounded-full overflow-hidden">
+                  <motion.div
+                    animate={{ 
+                      y: isActive ? -2 : 0,
+                      color: isActive ? colors.primary : `${colors.text}40` 
+                    }}
+                    transition={transition}
+                  >
+                    <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                  </motion.div>
+                  {isActive && (
+                    <motion.div 
+                      layoutId="mobileDot"
+                      className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                      style={{ backgroundColor: colors.primary }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </motion.nav>
+      </AnimatePresence>
 
-      {/* Add padding to prevent content from being hidden behind fixed headers */}
-      <div className="pt-[60px] pb-16 md:pb-0" />
+      <div className="h-32" />
     </>
   );
 };
