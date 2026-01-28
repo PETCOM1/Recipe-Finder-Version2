@@ -2,7 +2,7 @@
 import {BrowserRouter,Routes,Route} from 'react-router-dom'
 
 //Pages to route to...
-import Favourate from './pages/Favourate'
+import Favorite from './pages/Favorite'
 import RecipeDetails from './pages/RecipeDetails'
 import Home from './pages/Home'
 import NoPage from './pages/NoPage'
@@ -17,7 +17,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path='/favorites' element={<Favourate />} />
+          <Route path='/favorites' element={<Favorite />} />
           <Route path='/recipe/:id' element={<RecipeDetails />} />
           <Route path='*' element={<NoPage />} />
         </Routes>

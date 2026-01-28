@@ -1,22 +1,12 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import FavoriteContent from "./FavoriteContent"; // Corrected import
+import FavoriteContent from "../contexts/FavourateContect";
 import { useTheme } from '../contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { Heart, ChefHat, Stars, Flame } from 'lucide-react';
-import { useState, useEffect } from 'react';
 
 const Favorite = () => {
-  const { colors, theme } = useTheme();
-  const [isHoveringTitle, setIsHoveringTitle] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const { colors } = useTheme();
 
   const pageVariants = {
     hidden: { opacity: 0 },
